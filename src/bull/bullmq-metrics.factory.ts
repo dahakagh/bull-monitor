@@ -202,36 +202,58 @@ export class BullMQMetricsFactory {
     });
 
     queueEvents.on('stalled', async (event) => {
+      console.log('Stalled event', event);
+
       const job = await queue.getJob(event.jobId);
+
+
+      console.log('Stalled event - JOB', job);
+
       const jobLabels = {
-        [LABEL_NAMES.JOB_NAME]: job.name,
+        [LABEL_NAMES.JOB_NAME]: job?.name ?? 'Nameless job',
         ...labels,
       };
       this.jobs_stalled.inc(jobLabels, 1);
     });
     queueEvents.on('active', async (event) => {
+      console.log('Active event', event);
+
       const job = await queue.getJob(event.jobId);
+
+      console.log('Active event - JOB', job);
+
       const jobLabels = {
-        [LABEL_NAMES.JOB_NAME]: job.name,
+        [LABEL_NAMES.JOB_NAME]: job?.name ?? 'Nameless job',
         ...labels,
       };
       this.jobs_active.inc(jobLabels, 1);
     });
     queueEvents.on('waiting', async (event) => {
+
+      console.log('Waiting event', event);
+
       const job = await queue.getJob(event.jobId);
+
+      console.log('Waiting event - JOB', job);
+
       const jobLabels = {
-        [LABEL_NAMES.JOB_NAME]: job.name,
+        [LABEL_NAMES.JOB_NAME]: job?.name ?? 'Nameless job',
         ...labels,
       };
       this.jobs_waiting.inc(jobLabels, 1);
     });
     queueEvents.on('failed', async (event) => {
+      console.log('Failed event', event);
+
       const job = await queue.getJob(event.jobId);
+
+      console.log('Failed event - JOB', job);
+
       const errorType = job.stacktrace[job.stacktrace.length - 1]?.match(
         /^(?<errorType>[^:]+):/,
       )?.groups?.errorType;
       const jobLabels = {
-        [LABEL_NAMES.JOB_NAME]: job.name,
+        [LABEL_NAMES.JOB_NAME]: job?.name ?? 'Nameless job',
         [LABEL_NAMES.ERROR_TYPE]: errorType,
         ...labels,
       };
@@ -239,17 +261,25 @@ export class BullMQMetricsFactory {
       this.recordJobMetrics(jobLabels, STATUS_TYPES.FAILED, job);
     });
     queueEvents.on('delayed', async (event) => {
+      console.log('Delayed event', event);
+
       const job = await queue.getJob(event.jobId);
+
+      console.log('Delayed event - JOB', job);
       const jobLabels = {
-        [LABEL_NAMES.JOB_NAME]: job.name,
+        [LABEL_NAMES.JOB_NAME]: job?.name ?? 'Nameless job',
         ...labels,
       };
       this.jobs_delayed.inc(jobLabels, 1);
     });
     queueEvents.on('completed', async (event) => {
+      console.log('Completed event', event);
+
       const job = await queue.getJob(event.jobId);
+
+      console.log('Completed event - JOB', job);
       const jobLabels = {
-        [LABEL_NAMES.JOB_NAME]: job.name,
+        [LABEL_NAMES.JOB_NAME]: job?.name ?? 'Nameless job',
         ...labels,
       };
       this.jobs_completed.inc(jobLabels, 1);
